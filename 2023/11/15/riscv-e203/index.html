@@ -1,0 +1,818 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jack Tian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="4.2 蜂鸟E200简介蜂鸟E200 系列处理器核的特性简介如下。  采用两级流水线结构 能够运行RISC-V指令集，支持RV32I&#x2F;E&#x2F;A&#x2F;M&#x2F;C&#x2F;F&#x2F;D等指令子集的配置组合,支持机器模式（Machine Mode Only） 支持标准的JTAG调试接口以及成熟的软件调试工具 提供成熟的GCC编译工具链 配套SOC提供紧耦合系统IP模块">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jacktian&#39;s blog">
+<meta property="og:url" content="http://example.com/2023/11/15/riscv-e203/index.html">
+<meta property="og:site_name" content="jacktian&#39;s blog">
+<meta property="og:description" content="4.2 蜂鸟E200简介蜂鸟E200 系列处理器核的特性简介如下。  采用两级流水线结构 能够运行RISC-V指令集，支持RV32I&#x2F;E&#x2F;A&#x2F;M&#x2F;C&#x2F;F&#x2F;D等指令子集的配置组合,支持机器模式（Machine Mode Only） 支持标准的JTAG调试接口以及成熟的软件调试工具 提供成熟的GCC编译工具链 配套SOC提供紧耦合系统IP模块">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/media/e203_soc.png">
+<meta property="og:image" content="http://example.com/media/cpmplete_soc_platform.png">
+<meta property="og:image" content="http://example.com/media/soc_submodule.png">
+<meta property="og:image" content="http://example.com/media/code_style_dff.png">
+<meta property="og:image" content="http://example.com/media/dff_type.png">
+<meta property="og:image" content="http://example.com/media/std_always_block.png">
+<meta property="og:image" content="http://example.com/media/assert_xstate.png">
+<meta property="og:image" content="http://example.com/media/module_hier.png">
+<meta property="og:image" content="http://example.com/media/rtl_hier.png">
+<meta property="og:image" content="http://example.com/media/pingpong_buffer.png">
+<meta property="og:image" content="http://example.com/media/reg_slice.png">
+<meta property="og:image" content="http://example.com/media/e200_pipeline_struct.png">
+<meta property="og:image" content="http://example.com/media/jump_branch_instructions.png">
+<meta property="og:image" content="http://example.com/media/ifu.png">
+<meta property="og:image" content="http://example.com/media/ifu_macro_arch.png">
+<meta property="og:image" content="http://example.com/media/RV32I_instr.png">
+<meta property="og:image" content="http://example.com/media/RV32I_format.png">
+<meta property="og:image" content="http://example.com/media/RV32I_instr_encode.png">
+<meta property="og:image" content="http://example.com/media/RV32C_instr.png">
+<meta property="og:image" content="http://example.com/media/RV32C_format.png">
+<meta property="og:image" content="http://example.com/media/RV32C_00.png">
+<meta property="og:image" content="http://example.com/media/RV32C_01.png">
+<meta property="og:image" content="http://example.com/media/RV32C_10.png">
+<meta property="og:image" content="http://example.com/media/RV32M_instr.png">
+<meta property="og:image" content="http://example.com/media/RV32M_instr_encode.png">
+<meta property="og:image" content="http://example.com/media/ABI.png">
+<meta property="og:image" content="http://example.com/media/exception.png">
+<meta property="article:published_time" content="2023-11-15T15:52:12.166Z">
+<meta property="article:modified_time" content="2023-11-15T15:52:12.166Z">
+<meta property="article:author" content="Jack Tian">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/media/e203_soc.png">
+  
+  
+  
+  <title>jacktian&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"pcb9kOP4EdHz4hsXApUXJ5ie-gzGzoHsz","app_key":"eNkvWiD3ZxBWlb8lJafW0442","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>jacktian&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-15 23:52" pubdate>
+          2023年11月15日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="4-2-蜂鸟E200简介"><a href="#4-2-蜂鸟E200简介" class="headerlink" title="4.2 蜂鸟E200简介"></a>4.2 蜂鸟E200简介</h2><p>蜂鸟E200 系列处理器核的特性简介如下。</p>
+<ul>
+<li>采用两级流水线结构</li>
+<li>能够运行RISC-V指令集，支持RV32I&#x2F;E&#x2F;A&#x2F;M&#x2F;C&#x2F;F&#x2F;D等指令子集的配置组合,支持机器模式（Machine Mode Only）</li>
+<li>支持标准的JTAG调试接口以及成熟的软件调试工具</li>
+<li>提供成熟的GCC编译工具链</li>
+<li>配套SOC提供紧耦合系统IP模块，包括中断控制器、计时器、UART、QSPI和PWM等，即使能用（Ready-to-Use）的SoC平台与FPGA原型系统</li>
+</ul>
+<p>蜂鸟E200 系列处理器的系统示意图如图所示，提供丰富的存储和接口<br><img src="/media/e203_soc.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<ul>
+<li>私有的ITCM与DTCM，实现指令与数据的分离存储同时提高性能</li>
+<li>中断接口用于与SoC 级别的中断控制器连接</li>
+<li>调试接口用于与soc 级别的JTAG 调试器连接</li>
+<li>系统总线接口，用于访存指令或者数据</li>
+<li>紧祸合的私有外设接口，用于访存数据</li>
+<li>紧稠合的快速IO 接口，用于访存数据</li>
+<li>所有的ITCM 、DTCM 、系统总线接口、私有外设接口以及快速IO 接口均可以配置地址区间</li>
+</ul>
+<h2 id="4-5-蜂鸟E200配套SOC"><a href="#4-5-蜂鸟E200配套SOC" class="headerlink" title="4.5 蜂鸟E200配套SOC"></a>4.5 蜂鸟E200配套SOC</h2><p><img src="/media/cpmplete_soc_platform.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/soc_submodule.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h2 id="5-3-RTL-代码风格"><a href="#5-3-RTL-代码风格" class="headerlink" title="5.3 RTL 代码风格"></a>5.3 RTL 代码风格</h2><h3 id="5-3-1-使用标准DFF模块例化生成寄存器"><a href="#5-3-1-使用标准DFF模块例化生成寄存器" class="headerlink" title="5.3.1 使用标准DFF模块例化生成寄存器"></a>5.3.1 使用标准DFF模块例化生成寄存器</h3><p><img src="/media/code_style_dff.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/dff_type.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/std_always_block.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/assert_xstate.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h3 id="5-3-2-推荐使用assign语法代替if-else和case语法"><a href="#5-3-2-推荐使用assign语法代替if-else和case语法" class="headerlink" title="5.3.2 推荐使用assign语法代替if-else和case语法"></a>5.3.2 推荐使用assign语法代替if-else和case语法</h3><p>Verilog 中的if-else 和 case语法存在两大缺点</p>
+<ul>
+<li>不能传播不定态</li>
+<li>会产生优先级的选择电路而非并行选择电路，不利于时序和面积</li>
+</ul>
+<h2 id="5-4-蜂鸟E200模块层次划分"><a href="#5-4-蜂鸟E200模块层次划分" class="headerlink" title="5.4 蜂鸟E200模块层次划分"></a>5.4 蜂鸟E200模块层次划分</h2><p><img src="/media/module_hier.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/rtl_hier.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h2 id="6-3-处理器流水"><a href="#6-3-处理器流水" class="headerlink" title="6.3 处理器流水"></a>6.3 处理器流水</h2><p>流水线存在的时序问题: 流水线越深，由于每一级流水线需要进行握手，流水线最后一级的反压信号可能会一直串扰到最前一级造成严重的反压时序问题</p>
+<p>解决方法：</p>
+<ul>
+<li><p>取消握手：此方法能够杜绝反压的发生，时序表现非常好。但是取消握手，即意味着流水线中的每一级并不会与其下一级进行握手，可能会造成功能错误或者指令丢失。因此这种方法往往需要配合其他的机制， 譬如重执行（ Replay ）、预留大缓存等。</p>
+</li>
+<li><p>加入乒乓缓存：加入乒乓缓存（ Ping-pong Buffer ）是一种用面积换时序的方法，也是在解决反压的最简单方法。通过使用乒乓缓存（有两个表项〉替换掉普通的一级流水线（只有一个表项〉，可以使得此级流水线向上一级流水线的握手接收信号仅关注乒乓缓存中是否有一个以上有空的表项即可，而无需将下一级的握手接收信号串扰至上一级。<br><img src="/media/pingpong_buffer.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+</li>
+<li><p>加入前向旁路缓存：加入前向旁路缓存（ Forward Bypass Buffer ）也是一种用面积换<br>时序的方法，是在解决反压时的一种非常巧妙的方法。旁路缓存仅只有一个表项，由于增加了这一个额外的缓存表项，可以将后向的握手信号时序路径砍断，但是对前向路径不受影响，因此可以广泛使用于握手接口。蜂鸟E200 即于设计中采用此方法，有效地解决了多处反压造成的时序瓶颈。<br><img src="/media/reg_slice.png" srcset="/img/loading.gif" lazyload alt="image"><br><a target="_blank" rel="noopener" href="https://zipcpu.com/blog/2019/05/22/skidbuffer.html">https://zipcpu.com/blog/2019/05/22/skidbuffer.html</a></p>
+</li>
+</ul>
+<h3 id="6-4-2-流水线中的数据冲突"><a href="#6-4-2-流水线中的数据冲突" class="headerlink" title="6.4.2 流水线中的数据冲突"></a>6.4.2 流水线中的数据冲突</h3><p>WAW和WAR可以通过寄存器重命名的方法将相关性去除</p>
+<ul>
+<li>寄存器重命名技术在Tomasulo算法中通过保留站和ROB完成，或者采用纯物理寄存器（而不用ROB）的方式完成</li>
+</ul>
+<p>RAW是真数据相关，无法通过寄存器重命名的方式去除相关性，后序的指令要使用前级指令执行完成的结果，从而造成流水线停顿，为了减少流水线停顿带来的性能损失，可以采用“动态调度”</p>
+<ul>
+<li>采用数据旁路传播（Data Bypass and Forward）技术</li>
+<li>尽量让后续指令在等待过程中不阻塞流水线，而让其他无关的指令继续顺利执行</li>
+<li>早期的Tomasulo算法中通过保留站可以达到上述两方面的功效，但是保留站保存了操作数，无法做到深度很大</li>
+<li>最新的高性能处理器普遍采用在每个运算单元前配置乱序发射队列（Issue Queue）的方式，发射队列仅追踪RAW 相关性，而并不存放操作数，因此可以做到很深（譬如16 个表项〉。在发射队列中的指令一旦相关性解除之后，再从发射队列中发射出来读取物理寄存器组（ Physical Register File ），然后发送给运算单元开始计算。</li>
+</ul>
+<h2 id="6-5-蜂鸟E200处理器的流水线"><a href="#6-5-蜂鸟E200处理器的流水线" class="headerlink" title="6.5 蜂鸟E200处理器的流水线"></a>6.5 蜂鸟E200处理器的流水线</h2><p><img src="/media/e200_pipeline_struct.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h2 id="7-1-取指"><a href="#7-1-取指" class="headerlink" title="7.1 取指"></a>7.1 取指</h2><h3 id="7-1-1-取指特点"><a href="#7-1-1-取指特点" class="headerlink" title="7.1.1 取指特点"></a>7.1.1 取指特点</h3><ul>
+<li>指令的编码长度可以不相等，有的指令编码宽度是16位，有的是32位。对于32位的指令，其对应PC地址可能与32位地址边界不对齐</li>
+</ul>
+<h3 id="7-1-3-如何处理非对齐指令"><a href="#7-1-3-如何处理非对齐指令" class="headerlink" title="7.1.3 如何处理非对齐指令"></a>7.1.3 如何处理非对齐指令</h3><ol>
+<li>普通指令非对齐，使用Leftover buffer</li>
+<li>分支跳转指令非对齐，使用多bank sram进行指令存储。常见的奇偶交错方式为例，使用两块32位SRAM交错存储，两个连续的32位指令分别存储在不同的SRAM。对于32位地址不对齐的指令，一个周期同时访问两块SRAM取出连续的32位指令字，各取一部分进行拼接成需要的23位指令</li>
+</ol>
+<h3 id="7-1-4-如何处理分支指令"><a href="#7-1-4-如何处理分支指令" class="headerlink" title="7.1.4 如何处理分支指令"></a>7.1.4 如何处理分支指令</h3><ol>
+<li>分支指令类型：RISC-V没有带条件间接跳转跳转&#x2F;分支指令，对于这种指令，流水线只有在执行阶段完成后才能解析最终跳转结果，会stall流水线，影响性能为了提高性能，现代处理采用分支预测（Branch Prediction）技术<ul>
+<li>预测方向</li>
+<li>预测地址</li>
+</ul>
+</li>
+<li>预测方向</li>
+</ol>
+<ul>
+<li>静态预测<ul>
+<li>静态预测总是预测不跳转（在译码阶段得出真正预测结果，用delay slot减少流水线冲刷造成的性能损失）</li>
+<li>BTFN(Back Taken， Forward Not Taken)，for循环生成的汇编往往使用向后跳转（PC小）的分支指令</li>
+</ul>
+</li>
+<li>动态预测<ul>
+<li>一比特饱和计数器：喜爱次分支指令永远使用上一次记录的方向作为本次预测</li>
+<li>两比特饱和计数器</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>预测地址</li>
+</ol>
+<ul>
+<li>BTB（Branch Target Bufer），缓存分支指令的PC以及跳转目标地址。不能太大，不能应用于间接跳转&#x2F;分支指令</li>
+<li>RAS（Return Address Stack）使用容量有限的硬件堆栈（先进后出）存储函数调用的返回地址。<ul>
+<li>函数的调用和返回在程序中往往是成对出现的，因此可以在函数调用（使用分支跳转指令）时将当前PC 值加4 （或者2 ） 。即其顺序执行的下一条指令的PC 值压入孔气S 堆枝中，等到函数返回（使用分支跳转指令〉时将RAS中的值弹出，这样就可以快速地为该函数返回的分支跳转指令预测目标地址。</li>
+<li>多层嵌套哦那个一造成堆栈溢出</li>
+</ul>
+</li>
+<li>Indirect BTB</li>
+</ul>
+<h2 id="7-2-RISC-V架构特点对于取指的简化"><a href="#7-2-RISC-V架构特点对于取指的简化" class="headerlink" title="7.2 RISC-V架构特点对于取指的简化"></a>7.2 RISC-V架构特点对于取指的简化</h2><p><img src="/media/jump_branch_instructions.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h2 id="7-3-IFU"><a href="#7-3-IFU" class="headerlink" title="7.3 IFU"></a>7.3 IFU</h2><h3 id="7-3-1-整体设计思路"><a href="#7-3-1-整体设计思路" class="headerlink" title="7.3.1 整体设计思路"></a>7.3.1 整体设计思路</h3><p><img src="/media/ifu.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/ifu_macro_arch.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>主要包括如下功能：</p>
+<ul>
+<li>对取回地址简单译码（Mini-Decode）</li>
+<li>简单的分支预测（Simple-BPU）</li>
+<li>生成取指的PC（PC生成）</li>
+<li>根据PC地址访问ITCM或BIU（地址判断和ICB总线控制）</li>
+</ul>
+<p>(1)针对”快”的设计理念</p>
+<ul>
+<li>假定绝大多数取指都发生在ITCM，没有I-Cache，使用ITCM满足实时性要求</li>
+<li>ITCM使用单周期访问的SRAM</li>
+<li>某些特殊情况，指令需要从外部存储器中读取（比如上电引导程序从外部Flash读取）。此时IFU通过BIU使用系统存储器接口访问外部存储器，访问延迟不可能做到单周期，对这种特殊情况不做优化<br>(2)针对”连续不断”的设计思路</li>
+<li>每个周期都能生成下一条待取指令的PC，因此需要判断本指令是普通指令还是分支跳转指令，需要对当前取回的指令进行译码</li>
+<li>将取回的指令在同周期进行部分译码，如果是分支跳转指令，直接在同周期进行分支预测，使用译码得到的信息和分支预测的信息进行下一条待取指令PC的生成</li>
+<li>在一个周期内完成读回指令，译码，分支预测，PC生成操作，理论上可以做到背靠背取指令</li>
+<li>上述操作是一条关键时序路径，可能会制约主频</li>
+</ul>
+<p>分支预测：</p>
+<ul>
+<li>静态分支预测</li>
+<li>back taken</li>
+</ul>
+<h3 id="8-3-3-decode"><a href="#8-3-3-decode" class="headerlink" title="8.3.3 decode"></a>8.3.3 decode</h3><h4 id="RV32I"><a href="#RV32I" class="headerlink" title="RV32I"></a>RV32I</h4><p><img src="/media/RV32I_instr.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32I_format.png" srcset="/img/loading.gif" lazyload alt="iamge"><br><img src="/media/RV32I_instr_encode.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h4 id="RV32C"><a href="#RV32C" class="headerlink" title="RV32C"></a>RV32C</h4><p><img src="/media/RV32C_instr.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32C_format.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32C_00.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32C_01.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32C_10.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h4 id="RV32M"><a href="#RV32M" class="headerlink" title="RV32M"></a>RV32M</h4><p><img src="/media/RV32M_instr.png" srcset="/img/loading.gif" lazyload alt="image"><br><img src="/media/RV32M_instr_encode.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h4 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h4><p><img src="/media/ABI.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h2 id="10-3-机器模式下的异常处理"><a href="#10-3-机器模式下的异常处理" class="headerlink" title="10.3 机器模式下的异常处理"></a>10.3 机器模式下的异常处理</h2><p><img src="/media/exception.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2023/11/15/riscv-e203/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jack Tian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/15/test-artical/" title="test-artical">
+                        <span class="hidden-mobile">test-artical</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
