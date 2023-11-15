@@ -33,7 +33,7 @@
     <link href="/2023/11/15/test-artical/"/>
     <url>/2023/11/15/test-artical/</url>
     
-    <content type="html"><![CDATA[<p>This is a test page !!!<br><img src="/test-artical/BOOT_SET.png" alt="image"></p>]]></content>
+    <content type="html"><![CDATA[<p>This is a test page !!!<br><img src="/home/ICer/hexo-blog/source/_posts/test-artical/BOOT_SET.png" alt="image"></p>]]></content>
     
     
     <categories>
